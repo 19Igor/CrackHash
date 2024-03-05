@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @RestController
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class HTTPController {
 
     private final RestTemplate restTemplate;
+    private CopyOnWriteArrayList<Task> collection;
     private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
     private static int currentTaskCounter = 0;
 
@@ -36,7 +38,9 @@ public class HTTPController {
 
     @GetMapping
     public Response2User sendResult2User(@RequestParam("id") String id) {
-        for (Task task : TaskQueue.taskQueue) {
+        //
+
+        for (Task task : collection) {
             // при нескольких тасках прога выводит первую таску из очереди
             // это из-за того, что я привизал к task.userID
             if (task.userID.equals(id)) {
@@ -61,7 +65,7 @@ public class HTTPController {
     }
 
     private void deleteAllElementsFromTaskQueue(String userID){
-        TaskQueue.taskQueue.removeIf(buff -> buff.userID.equals(userID));
+        collection.removeIf(buff -> buff.userID.equals(userID));
     }
 
     private void invokeWorker(HttpEntity<Task> requestDtoHttpEntity){
@@ -69,7 +73,11 @@ public class HTTPController {
         String serviceURL = "http://worker-service:8081/queue";
 
         CompletableFuture.runAsync(() -> {
-            restTemplate.postForEntity(serviceURL, requestDtoHttpEntity, String.class);
+            restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
+            /*
+            *  Этот метод, получается, что ожидает ответа от manager, хоть и выполняется асинхронно
+            * Любые запросы должны стараться быстрей закончиться
+            * */
         });
     }
 
@@ -85,14 +93,15 @@ public class HTTPController {
     }
 
     private int addTask2Collection(Task task){
-        TaskQueue.taskQueue.add(task);
+        //TODO
+        collection.add(task);
         return task.taskID;
     }
 
     private Task getObjective(int id){
-        for (int i = 0; i < TaskQueue.taskQueue.size(); i++){
-            if (TaskQueue.taskQueue.get(i).taskID == id){
-                return TaskQueue.taskQueue.get(i);
+        for (Task task : collection) {
+            if (task.taskID == id) {
+                return task;
             }
         }
         return null;

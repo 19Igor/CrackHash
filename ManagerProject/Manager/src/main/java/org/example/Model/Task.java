@@ -4,6 +4,7 @@ import lombok.Data;
 import org.example.Const.WorkerStatus;
 
 @Data
+// синхронизовать
 public class Task {
     public String userID;
     public int taskID;

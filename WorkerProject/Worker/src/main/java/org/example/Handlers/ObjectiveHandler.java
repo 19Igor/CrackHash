@@ -59,6 +59,8 @@ public class ObjectiveHandler {
     }
 
     public static String convertHash2Word(String hash, int maxWordLen) {
+        //
+
         List<Character> characters = alphabet2List();
         String buff = doTask(maxWordLen, hash, characters);
         if (buff.equals("non")){

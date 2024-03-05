@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="84631d39-5d39-43fa-8d50-7658105fbdd2" name="Changes" comment="" />
+    <list default="true" id="84631d39-5d39-43fa-8d50-7658105fbdd2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Model/TaskQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Model/TaskQueue.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +19,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -47,6 +53,7 @@
     "Maven.CrackHash [package].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/igorepov/IdeaProjects/CrackHash",
     "node.js.detected.package.eslint": "true",
@@ -111,7 +118,9 @@
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
-      <deployment type="docker-compose.yml" />
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
@@ -161,6 +170,7 @@
       <workItem from="1708067475727" duration="1028000" />
       <workItem from="1708096972608" duration="3134000" />
       <workItem from="1708189804499" duration="47000" />
+      <workItem from="1709261074875" duration="1364000" />
     </task>
     <servers />
   </component>
