@@ -1,5 +1,6 @@
 package org.example.Model;
 
+
 import lombok.Data;
 import org.example.Const.WorkerStatus;
 

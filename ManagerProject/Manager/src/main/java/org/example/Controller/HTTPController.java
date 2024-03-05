@@ -9,10 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 
 @RestController
 @RequestMapping("manager")
@@ -73,11 +73,14 @@ public class HTTPController {
         String serviceURL = "http://worker-service:8081/queue";
 
         CompletableFuture.runAsync(() -> {
-            restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
-            /*
-            *  Этот метод, получается, что ожидает ответа от manager, хоть и выполняется асинхронно
-            * Любые запросы должны стараться быстрей закончиться
-            * */
+            try {
+                restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
+                /*
+                 *  Любые запросы должны стараться завершиться как можно быстрее.
+                 */
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 

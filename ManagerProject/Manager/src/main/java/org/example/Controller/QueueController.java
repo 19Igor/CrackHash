@@ -19,21 +19,11 @@ public class QueueController {
     public void getTaskFromWorker(@RequestBody Task task){
         for (Task value : collection) {
             if (value.taskID == task.taskID) {
-
+                // на этом моменте может быть уже изменено значение другим потоком
                 value.status = WorkerStatus.READY;
-
+                // или на этом моменте может быть уже изменено значение другим потоком
                 value.word = task.word;
             }
         }
-
-//        for (int i = 0; i < TaskQueue.taskQueue.size(); i++)
-//        {
-//            if (TaskQueue.taskQueue.get(i).taskID == task.taskID)
-//            {
-//                TaskQueue.taskQueue.get(i).status = WorkerStatus.READY;
-//
-//                TaskQueue.taskQueue.get(i).word = task.word;
-//            }
-//        }
     }
 }
