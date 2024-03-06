@@ -17,9 +17,6 @@ public class QueueController {
     private final static String localURL = "http://localhost:8080/queue";
 
     @PostMapping
-    // этот метод вызывается внутри бизнес логики воркера
-    // этот метод должен отправить менеджеру готовую таску
-    // после чего, менеджер положит её в коллекцию
     public void sendDoneTask(@RequestBody Task task){
         // вынести ассинхронность на уровень воркера, а именно здеь
         // не в manager делать асинхронную отправку запроса воркеру, а здесь сделать асинхронное выполнение задачи

@@ -3,8 +3,10 @@ package org.example.Model;
 
 import lombok.Data;
 import org.example.Const.WorkerStatus;
+import org.springframework.scheduling.annotation.Async;
 
 @Data
+@Async
 // синхронизовать
 public class Task {
     public String userID;

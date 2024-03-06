@@ -36,8 +36,7 @@ public class HTTPController {
 
 
     @GetMapping
-    public Response2User sendResult2User(@RequestParam("id") String id) {
-        //
+    public  Response2User sendResult2User(@RequestParam("id") String id) {
 
         for (Task task : collection) {
             // при нескольких тасках прога выводит первую таску из очереди
@@ -72,11 +71,11 @@ public class HTTPController {
         String serviceURL = "http://worker-service:8081/queue";
 
         CompletableFuture.runAsync(() -> {
+            /*
+             *  Любые запросы должны стараться завершиться как можно быстрее.
+             */
             try {
                 restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
-                /*
-                 *  Любые запросы должны стараться завершиться как можно быстрее.
-                 */
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -95,7 +94,6 @@ public class HTTPController {
     }
 
     private int addTask2Collection(Task task){
-        //TODO
         collection.add(task);
         return task.taskID;
     }
