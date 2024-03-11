@@ -1,0 +1,21 @@
+version: "3"
+services: 
+  worker-service:
+    build:
+      context: ./MultiThreadCrackHash/WorkerProject/Worker
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    restart: always
+  manager-service:
+    build: 
+      context: ./MultiThreadCrackHash/ManagerProject/Manager
+      dockerfile: Dockerfile
+    ports: 
+      - "8080:8080"
+    restart: always
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
