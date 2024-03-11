@@ -13,6 +13,9 @@ public class RabbitMqController {
     * Здесь будет конвертирование в xml и отправка таски в очередь
     * */
 
+    private final String topicExchangeName = "ManagerExchange";
+    private final String routingKey = "RoutingKey";
+
     private final RabbitTemplate rabbitTemplate;
     private final MyMarshaller marshaller;
 
@@ -24,7 +27,7 @@ public class RabbitMqController {
     public void sendTaskToQueue(Task task){
         // сначала таску нужно конвертировать в xml и потом в String
         String xmlTask = marshaller.convertTask2XmlString(task);
-
+        rabbitTemplate.convertAndSend(topicExchangeName, routingKey, xmlTask);
 
 
     }

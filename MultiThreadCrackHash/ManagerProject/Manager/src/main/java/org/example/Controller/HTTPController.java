@@ -1,20 +1,16 @@
 package org.example.Controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.example.Const.WorkerStatus;
 import org.example.Model.*;
 import org.example.QueueManagement.RabbitMqController;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpEntity;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
+
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,7 +29,6 @@ public class HTTPController {
     /*
     * получается, что spring boot сам внедрит singleton объекта mqController.
     */
-
 
     private final RabbitMqController mqController;
 
@@ -130,28 +125,6 @@ public class HTTPController {
             }
         }
         return null;
-    }
-
-    private void test1(){
-        Task task = new Task();
-        task.word = "abu";
-        task.status = WorkerStatus.IN_PROGRESS;
-        task.hash = "gazali";
-        convertTask2XML(task);
-    }
-    private void convertTask2XML(Task task){
-//        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("MarshallerBean.xml");
-        ApplicationContext context = new ClassPathXmlApplicationContext("MarshallerBean.xml");
-
-        Jaxb2Marshaller marshaller = (Jaxb2Marshaller) context.getBean("jaxb2Marshaller");
-
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(task, new StreamResult(writer));
-
-        String s = writer.toString();
-        System.out.println("It's the s:");
-        System.out.println();
-
     }
 
 }
