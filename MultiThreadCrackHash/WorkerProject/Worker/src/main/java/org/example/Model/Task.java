@@ -1,9 +1,11 @@
 package org.example.Model;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import org.example.Const.WorkerStatus;
 
-@Data
+
+@XmlRootElement
 public class Task {
     public String userID;
     public int taskID;

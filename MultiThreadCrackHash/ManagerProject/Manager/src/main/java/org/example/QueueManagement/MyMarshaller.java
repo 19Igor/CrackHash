@@ -19,12 +19,10 @@ import java.io.StringWriter;
 public class MyMarshaller {
 
     private static final String FILE_NAME = "MarshallerBean.xml";
-
     private Marshaller marshaller;
     private Unmarshaller unmarshaller;
 
-    public MyMarshaller() {
-    }
+    public MyMarshaller() {}
 
     String convertTask2XmlString(Task task){
         ApplicationContext appContext = new ClassPathXmlApplicationContext(FILE_NAME);
@@ -41,6 +39,4 @@ public class MyMarshaller {
         System.out.println("It's the string: " + stringWriter);
         return stringWriter.toString();
     }
-
-
 }

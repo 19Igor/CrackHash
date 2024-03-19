@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class HTTPController {
 
     private final RestTemplate restTemplate;
-    private CopyOnWriteArrayList<Task> collection;
+    private final CopyOnWriteArrayList<Task> collection;
     private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
     private static int currentTaskCounter = 0;
     /*
@@ -33,23 +33,14 @@ public class HTTPController {
     private final RabbitMqController mqController;
 
     @PostMapping()
+    // точка старта
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
 
         int objectiveID = addTask2Collection(createWorkerTask(requestDto));
+        mqController.sendTaskToQueue(getObjective(objectiveID));
 
-        // здесь нужно конвертировать таску в xml и отправить в очередь
-        {
-            Task task = new Task();
-            task.word = "abu";
-            task.status = WorkerStatus.IN_PROGRESS;
-            task.hash = "gazali";
-            mqController.sendTaskToQueue(task);
-        }
-
-
-
-
-        invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
+        // это уже не понадобится, так как всё взаимодействие будет происходить через очередь.
+//        invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
 
         return new RequestedID(RESERVED_ID);
     }
@@ -58,28 +49,30 @@ public class HTTPController {
     @GetMapping
     public  Response2User sendResult2User(@RequestParam("id") String id) {
 
-        for (Task task : collection) {
-            // при нескольких тасках прога выводит первую таску из очереди
-            // это из-за того, что я привязал к task.userID
-            if (task.userID.equals(id)) {
-                double workingTimeSec = (System.currentTimeMillis() - task.creationTime) / 1000.0;
-                int TIME_LIMIT = 15;
-                if (task.status.equals(WorkerStatus.IN_PROGRESS) && workingTimeSec >= TIME_LIMIT){
-                    // здесь рассматривается случай, когда время таски превышено
-                    // здесь ещё нужно отправить worker, чтобы он прекратил выполнение текущей задачи
-                    // и при том НЕ завершился
-                    return new Response2User(WorkerStatus.ERROR, null);
+        synchronized (collection) {
+            // добавить синхронизацию
+            for (Task task : collection) {
+                // при нескольких тасках прога выводит первую таску из очереди
+                // это из-за того, что я привязал к task.userID
+                if (task.userID.equals(id)) {
+                    double workingTimeSec = (System.currentTimeMillis() - task.creationTime) / 1000.0;
+                    int TIME_LIMIT = 15;
+                    if (task.status.equals(WorkerStatus.IN_PROGRESS) && workingTimeSec >= TIME_LIMIT) {
+                        // здесь рассматривается случай, когда время таски превышено
+                        // здесь ещё нужно отправить worker, чтобы он прекратил выполнение текущей задачи
+                        // и при том НЕ завершился
+                        return new Response2User(WorkerStatus.ERROR, null);
+                    } else if (task.status.equals(WorkerStatus.IN_PROGRESS) && task.word == null) {
+                        // здесь рассматривается случай, когда таска выполняется от 0 и до 15 сек.
+                        return new Response2User(WorkerStatus.IN_PROGRESS, null);
+                    }
+                    // здесь нужно очистить нашу коллекцию тасок
+                    deleteAllElementsFromTaskQueue(id);
+                    return new Response2User(WorkerStatus.READY, task.word);
                 }
-                else if (task.status.equals(WorkerStatus.IN_PROGRESS) && task.word == null){
-                    // здесь рассматривается случай, когда таска выполняется от 0 и до 15 сек.
-                    return new Response2User(WorkerStatus.IN_PROGRESS, null);
-                }
-                // здесь нужно очистить нашу коллекцию тасак
-                deleteAllElementsFromTaskQueue(id);
-                return new Response2User(WorkerStatus.READY, task.word);
             }
+            return null;
         }
-        return null;
     }
 
     private void deleteAllElementsFromTaskQueue(String userID){
@@ -119,12 +112,16 @@ public class HTTPController {
     }
 
     private Task getObjective(int id){
-        for (Task task : collection) {
-            if (task.taskID == id) {
-                return task;
+        // добавить синхронизацию
+        synchronized (collection){
+            for (Task task : collection) {
+                synchronized (task){
+                    if (task.taskID == id) {
+                        return task;
+                    }
+                }
             }
+            return null;
         }
-        return null;
     }
-
 }
