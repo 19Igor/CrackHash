@@ -1,9 +1,13 @@
 package org.example.Controller;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import lombok.AllArgsConstructor;
 import org.example.Const.WorkerStatus;
 import org.example.Model.*;
 import org.example.QueueManagement.RabbitMqController;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -11,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 
-import java.util.Objects;
+import java.io.StringReader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,10 +30,6 @@ public class HTTPController {
     private final CopyOnWriteArrayList<Task> collection;
     private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
     private static int currentTaskCounter = 0;
-    /*
-    * получается, что spring boot сам внедрит singleton объекта mqController.
-    */
-
     private final RabbitMqController mqController;
 
     @PostMapping()
@@ -44,7 +44,6 @@ public class HTTPController {
 
         return new RequestedID(RESERVED_ID);
     }
-
 
     @GetMapping
     public  Response2User sendResult2User(@RequestParam("id") String id) {

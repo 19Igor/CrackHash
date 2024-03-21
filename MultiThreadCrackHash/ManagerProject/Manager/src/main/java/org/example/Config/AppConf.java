@@ -18,9 +18,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Configuration
 public class AppConf {
 
-    static final String queueName = "ManagerQueue";
-    static final String exchangeName = "ManagerExchange";
-    static final String routingKey = "RoutingKey";
+    static final String Manager2WorkerQueue = "Manager2WorkerQueue";
+    static final String Worker2ManagerQueue = "Worker2ManagerQueue";
+    static final String MANAGER_EXCHANGE = "MANAGER_EXCHANGE";
+    static final String WORKER_EXCHANGE = "WORKER_EXCHANGE";
+    static final String Manager2WorkerKey = "Manager2WorkerKey";
+    static final String Worker2ManagerKey = "Worker2ManagerKey";
 
     @SneakyThrows
     @Bean
@@ -36,19 +39,34 @@ public class AppConf {
     }
 
     @Bean
-    Queue queue() {
+    Queue getManager2WorkerQueue() {
         // скорее всего, здесь нужно будет поменять durable
-        return new Queue(queueName, false);
+        return new Queue(Manager2WorkerQueue, false);
     }
 
     @Bean
-    DirectExchange exchange(){
-        return new DirectExchange(exchangeName);
+    DirectExchange managerExchange(){
+        return new DirectExchange(MANAGER_EXCHANGE);
     }
 
     @Bean
-    Binding binding(Queue queue, DirectExchange directExchange){
-        return BindingBuilder.bind(queue).to(directExchange).with(routingKey);
+    Binding binding(Queue getManager2WorkerQueue, DirectExchange managerExchange){
+        return BindingBuilder.bind(getManager2WorkerQueue).to(managerExchange).with(Manager2WorkerKey);
+    }
+
+    @Bean
+    Queue getWorker2ManagerQueue(){
+        return new Queue(Worker2ManagerQueue, false);
+    }
+    
+    @Bean
+    DirectExchange workerExchange(){
+        return new DirectExchange(WORKER_EXCHANGE);
+    }
+
+    @Bean
+    Binding binding1(Queue getWorker2ManagerQueue, DirectExchange workerExchange){
+        return BindingBuilder.bind(getWorker2ManagerQueue).to(workerExchange).with(Worker2ManagerKey);
     }
 
 }
