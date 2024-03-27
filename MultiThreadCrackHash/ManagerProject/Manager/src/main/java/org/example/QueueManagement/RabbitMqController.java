@@ -26,14 +26,13 @@ public class RabbitMqController {
     private final String Manager2WorkerKey = "Manager2WorkerKey";
 
     private final RabbitTemplate rabbitTemplate;
-    private final CopyOnWriteArrayList<Task> collection;
 
-    public RabbitMqController(RabbitTemplate rabbitTemplate, CopyOnWriteArrayList<Task> collection) {
+    public RabbitMqController(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
-        this.collection = collection;
     }
 
     public void sendTaskToQueue(Task task){
+        System.out.println("Start: RabbitMqController");
         StringWriter stringWriter = new StringWriter();
 
         try{
@@ -46,13 +45,15 @@ public class RabbitMqController {
             e.printStackTrace();
         }
 
+        System.out.println("Sending from manger to queue");
         rabbitTemplate.convertAndSend(topicExchangeName, Manager2WorkerKey, stringWriter.toString());
+        System.out.println("End: RabbitMqController");
     }
 
     @RabbitListener(queues = "Worker2ManagerQueue")
     public void getTaskFromWorker2ManagerQueue(@RequestBody String xmlTask){
+        System.out.println("Message receiving is started");
         Task buff = null;
-
         try{
             JAXBContext jaxbContext = JAXBContext.newInstance(Task.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -60,8 +61,10 @@ public class RabbitMqController {
             System.out.println(buff.word);
         }
         catch (JAXBException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
+        System.out.println("\uD83D\uDE04 Message receiving is ended");
 
         // TODO: здесь реализовать добавление выполненных тасок в БД.
 

@@ -1,12 +1,32 @@
 version: "3"
-services: 
-  worker-service:
-    build:
-      context: ./MultiThreadCrackHash/WorkerProject/Worker
-      dockerfile: Dockerfile
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: user
     ports:
-      - "8081:8081"
-    restart: always
+      - "5672:5672"
+      - "15672:15672"
+    hostname: rabbit
+    #    healthcheck:
+    #      test: rabbitmq-diagnostics -q ping
+    #      interval: 30s
+    #      timeout: 30s
+    #      retries: 3
+    networks:
+      - main
+  
+  worker-service:
+     build:
+       context: ./MultiThreadCrackHash/WorkerProject/Worker
+       dockerfile: Dockerfile
+     ports:
+       - "8081:8081"
+     restart: always
+     networks:
+       - main
+
   manager-service:
     build: 
       context: ./MultiThreadCrackHash/ManagerProject/Manager
@@ -14,8 +34,15 @@ services:
     ports: 
       - "8080:8080"
     restart: always
-  rabbitmq:
-    image: rabbitmq:management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    networks:
+      - main
+    depends_on:
+      - rabbitmq
+    #environment:
+    #  - LOGGING_LEVEL_ROOT=DEBUG
+  
+
+networks:
+  main:
+    driver: bridge
+

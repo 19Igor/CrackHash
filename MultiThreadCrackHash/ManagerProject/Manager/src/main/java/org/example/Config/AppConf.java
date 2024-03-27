@@ -3,10 +3,11 @@ package org.example.Config;
 import lombok.SneakyThrows;
 
 import org.example.Model.Task;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -43,7 +44,26 @@ public class AppConf {
         // скорее всего, здесь нужно будет поменять durable
         return new Queue(Manager2WorkerQueue, false);
     }
-
+//----------------------------------------------------------------------------------------------------------------------
+//    @Bean
+//    public ConnectionFactory connectionFactory() {
+//        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("localhost");
+//        cachingConnectionFactory.setUsername("user");
+//        cachingConnectionFactory.setPassword("user");
+//        cachingConnectionFactory.setVirtualHost("vhost");
+//        return cachingConnectionFactory;
+//    }
+//    @Bean
+//    public RabbitTemplate rabbitTemplate() {
+//        return new RabbitTemplate(connectionFactory());
+//    }
+//
+//    @Bean
+//    public AmqpAdmin amqpAdmin() {
+//        return new RabbitAdmin(connectionFactory());
+//    }
+//
+//----------------------------------------------------------------------------------------------------------------------
     @Bean
     DirectExchange managerExchange(){
         return new DirectExchange(MANAGER_EXCHANGE);

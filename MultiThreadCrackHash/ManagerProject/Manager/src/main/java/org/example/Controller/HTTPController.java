@@ -1,21 +1,15 @@
 package org.example.Controller;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import lombok.AllArgsConstructor;
 import org.example.Const.WorkerStatus;
 import org.example.Model.*;
 import org.example.QueueManagement.RabbitMqController;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-
-import java.io.StringReader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -35,18 +29,20 @@ public class HTTPController {
     @PostMapping()
     // точка старта
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
+        System.out.println("Start: HTTPController");
 
         int objectiveID = addTask2Collection(createWorkerTask(requestDto));
         mqController.sendTaskToQueue(getObjective(objectiveID));
 
         // это уже не понадобится, так как всё взаимодействие будет происходить через очередь.
 //        invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
+        System.out.println("End: HTTPController");
 
         return new RequestedID(RESERVED_ID);
     }
 
     @GetMapping
-    public  Response2User sendResult2User(@RequestParam("id") String id) {
+    public Response2User sendResult2User(@RequestParam("id") String id) {
 
         synchronized (collection) {
             // добавить синхронизацию
@@ -78,21 +74,21 @@ public class HTTPController {
         collection.removeIf(buff -> buff.userID.equals(userID));
     }
 
-    private void invokeWorker(HttpEntity<Task> requestDtoHttpEntity){
-        String localURL = "http://localhost:8081/queue";
-        String serviceURL = "http://worker-service:8081/queue";
-
-        CompletableFuture.runAsync(() -> {
-            /*
-             *  Любые запросы должны стараться завершиться как можно быстрее.
-             */
-            try {
-                restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
+//    private void invokeWorker(HttpEntity<Task> requestDtoHttpEntity){
+//        String localURL = "http://localhost:8081/queue";
+//        String serviceURL = "http://worker-service:8081/queue";
+//
+//        CompletableFuture.runAsync(() -> {
+//            /*
+//             *  Любые запросы должны стараться завершиться как можно быстрее.
+//             */
+//            try {
+//                restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 
     private Task createWorkerTask(RequestDto requestBody){
         Task newTask = new Task();
