@@ -42,7 +42,7 @@ public class AppConf {
     @Bean
     Queue getManager2WorkerQueue() {
         // скорее всего, здесь нужно будет поменять durable
-        return new Queue(Manager2WorkerQueue, false);
+        return new Queue(Manager2WorkerQueue, true);
     }
 //----------------------------------------------------------------------------------------------------------------------
 //    @Bean
@@ -76,7 +76,7 @@ public class AppConf {
 
     @Bean
     Queue getWorker2ManagerQueue(){
-        return new Queue(Worker2ManagerQueue, false);
+        return new Queue(Worker2ManagerQueue, true);
     }
     
     @Bean
