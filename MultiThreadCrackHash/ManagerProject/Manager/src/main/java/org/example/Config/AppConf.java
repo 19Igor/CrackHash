@@ -1,7 +1,9 @@
 package org.example.Config;
 
+import com.mongodb.lang.NonNullApi;
 import lombok.SneakyThrows;
 
+import org.example.DbManagement.TaskRepository;
 import org.example.Model.Task;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -11,13 +13,14 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @Configuration
-public class AppConf {
+public class AppConf{
 
     static final String Manager2WorkerQueue = "Manager2WorkerQueue";
     static final String Worker2ManagerQueue = "Worker2ManagerQueue";
@@ -45,24 +48,23 @@ public class AppConf {
         return new Queue(Manager2WorkerQueue, true);
     }
 //----------------------------------------------------------------------------------------------------------------------
-//    @Bean
-//    public ConnectionFactory connectionFactory() {
-//        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("localhost");
-//        cachingConnectionFactory.setUsername("user");
-//        cachingConnectionFactory.setPassword("user");
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("rabbitmq");
+        cachingConnectionFactory.setUsername("user");
+        cachingConnectionFactory.setPassword("user");
 //        cachingConnectionFactory.setVirtualHost("vhost");
-//        return cachingConnectionFactory;
-//    }
-//    @Bean
-//    public RabbitTemplate rabbitTemplate() {
-//        return new RabbitTemplate(connectionFactory());
-//    }
-//
-//    @Bean
-//    public AmqpAdmin amqpAdmin() {
-//        return new RabbitAdmin(connectionFactory());
-//    }
-//
+        return cachingConnectionFactory;
+    }
+    @Bean
+    public RabbitTemplate rabbitTemplate() {
+        return new RabbitTemplate(connectionFactory());
+    }
+
+    @Bean
+    public AmqpAdmin amqpAdmin() {
+        return new RabbitAdmin(connectionFactory());
+    }
 //----------------------------------------------------------------------------------------------------------------------
     @Bean
     DirectExchange managerExchange(){
@@ -88,5 +90,14 @@ public class AppConf {
     Binding binding1(Queue getWorker2ManagerQueue, DirectExchange workerExchange){
         return BindingBuilder.bind(getWorker2ManagerQueue).to(workerExchange).with(Worker2ManagerKey);
     }
+
+//-------------------------------------------------MongoDB--------------------------------------------------------------
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 }

@@ -2,8 +2,10 @@ package org.example.Controller;
 
 import lombok.AllArgsConstructor;
 import org.example.Const.WorkerStatus;
+import org.example.DbManagement.TaskRepository;
 import org.example.Model.*;
 import org.example.QueueManagement.RabbitMqController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -25,17 +27,35 @@ public class HTTPController {
     private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
     private static int currentTaskCounter = 0;
     private final RabbitMqController mqController;
+    @Autowired
+    private final TaskRepository taskRepository;
+
 
     @PostMapping()
     // точка старта
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
         System.out.println("Start: HTTPController");
 
-        int objectiveID = addTask2Collection(createWorkerTask(requestDto));
-        mqController.sendTaskToQueue(getObjective(objectiveID));
+        // здесь будет проверка добавления таски в бд и изъятие этой таски из бд
+        {
+            // как правильно настроить
+            DataBaseEntry one = new DataBaseEntry("SomeStr", 10, "word",
+                    WorkerStatus.READY, "hash", 5, 2345);
+            taskRepository.insert(one);
+
+            DataBaseEntry retrievedStudent = taskRepository.findById(one.getId()).orElse(null);
+            if (retrievedStudent != null) {
+                System.out.println("Retrieved Student: " + retrievedStudent.getHash());
+            } else {
+                System.out.println("Student not found!");
+            }
+        }
+
+//        int objectiveID = addTask2Collection(createWorkerTask(requestDto));
+//        mqController.sendTaskToQueue(getObjective(objectiveID));
 
         // это уже не понадобится, так как всё взаимодействие будет происходить через очередь.
-//        invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
+        // invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
         System.out.println("End: HTTPController");
 
         return new RequestedID(RESERVED_ID);
@@ -74,21 +94,6 @@ public class HTTPController {
         collection.removeIf(buff -> buff.userID.equals(userID));
     }
 
-//    private void invokeWorker(HttpEntity<Task> requestDtoHttpEntity){
-//        String localURL = "http://localhost:8081/queue";
-//        String serviceURL = "http://worker-service:8081/queue";
-//
-//        CompletableFuture.runAsync(() -> {
-//            /*
-//             *  Любые запросы должны стараться завершиться как можно быстрее.
-//             */
-//            try {
-//                restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 
     private Task createWorkerTask(RequestDto requestBody){
         Task newTask = new Task();

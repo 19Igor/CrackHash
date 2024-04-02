@@ -21,5 +21,4 @@ public class Task {
     public int maxLength;
 //    @XmlElement(name = "creationTime")
     public long creationTime;
-
 }

@@ -29,14 +29,13 @@ public class QueueController {
     @Async
     public void sendDoneTask(@RequestBody String xmlTask){
 
-//        DeliverCallback deliverCallback
-
-
         System.out.println("Start: sendDoneTask");
-        Task buff = null;
+
         System.out.println("Converting is started");
+        Task buff = null;
         buff = marshaller.convertXmlString2Task(xmlTask);
         System.out.println("Converting is ended");
+
 
         System.out.println("Searching of the word is started");
         buff.word = ObjectiveHandler.convertHash2Word(buff.hash, buff.maxLength);
@@ -49,8 +48,6 @@ public class QueueController {
         String stringBuff = marshaller.convertTask2XmlString(buff);
         System.out.println("Return transmission is started");
         rabbitTemplate.convertAndSend(WORKER_EXCHANGE, Worker2ManagerKey, stringBuff);
-
-
 
     }
 
