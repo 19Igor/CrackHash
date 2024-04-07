@@ -39,16 +39,20 @@ public class HTTPController {
         // здесь будет проверка добавления таски в бд и изъятие этой таски из бд
         {
             // как правильно настроить
+            System.out.println("Начало отправки в бд.");
             DataBaseEntry one = new DataBaseEntry("SomeStr", 10, "word",
                     WorkerStatus.READY, "hash", 5, 2345);
             taskRepository.insert(one);
+            System.out.println("Завершение отправки в бд.");
 
+            System.out.println("Начало получения записи из бд");
             DataBaseEntry retrievedStudent = taskRepository.findById(one.getId()).orElse(null);
             if (retrievedStudent != null) {
                 System.out.println("Retrieved Student: " + retrievedStudent.getHash());
             } else {
                 System.out.println("Student not found!");
             }
+            System.out.println("Конец получения записи из бд");
         }
 
 //        int objectiveID = addTask2Collection(createWorkerTask(requestDto));
