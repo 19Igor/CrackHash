@@ -14,4 +14,6 @@ public class Task {
     public String hash = null;
     public int maxLength;
     public long creationTime;
+    public char firstWord;
+    public char lastWord;
 }

@@ -38,7 +38,7 @@ public class QueueController {
 
 
         System.out.println("Searching of the word is started");
-        buff.word = ObjectiveHandler.convertHash2Word(buff.hash, buff.maxLength);
+        buff.word = ObjectiveHandler.convertHash2Word(buff.hash, buff.maxLength, 'a', 'b');
         System.out.println("Searching of the word is ended");
         /*
         * На данный момент есть таска, в котором либо есть слово, либо нет.

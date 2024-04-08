@@ -1,9 +1,6 @@
 package org.example.Config;
 
-import com.mongodb.lang.NonNullApi;
 import lombok.SneakyThrows;
-
-import org.example.DbManagement.TaskRepository;
 import org.example.Model.Task;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -13,9 +10,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -90,14 +85,4 @@ public class AppConf{
     Binding binding1(Queue getWorker2ManagerQueue, DirectExchange workerExchange){
         return BindingBuilder.bind(getWorker2ManagerQueue).to(workerExchange).with(Worker2ManagerKey);
     }
-
-//-------------------------------------------------MongoDB--------------------------------------------------------------
-
-
-
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
 }

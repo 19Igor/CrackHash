@@ -33,10 +33,10 @@ public class ObjectiveHandler {
         }
     }
 
-    private static String doTask(final int maxWordLen, final String hash, final List<Character> symbols) {
-        for (int i = 1; i <= maxWordLen; i++) {
+    private static String doTask(final int maxWordLen, final String hash, final List<Character> alphabet, String currentLetter) {
 
-            Optional<String> matchingWord = Generator.permutation(symbols)
+        for (int i = 1; i <= maxWordLen; i++) {
+            Optional<String> matchingWord = Generator.permutation(alphabet)
                     .withRepetitions(i)
                     .stream()
                     .map(permutation -> permutation.toString().replaceAll("[\\[\\],\\s+]", ""))
@@ -58,15 +58,24 @@ public class ObjectiveHandler {
         return list;
     }
 
-    public static String convertHash2Word(String hash, int maxWordLen) {
+
+    public static String convertHash2Word(String hash, int maxWordLen, char firstWord, char lastWord) {
 
         List<Character> characters = alphabet2List();
-        String buff = doTask(maxWordLen, hash, characters);
-        if (buff.equals("non")){
-            System.out.println("The word wasn't found.");
-            return "non";
-        }
-        return buff;
+
+        // сделать здесь цикл по начальным буквам
+//        for (int i = 0; i < ; i++) {
+//
+//        }
+//        String buff = doTask(maxWordLen, hash, characters, );
+        
+        
+//        if (buff.equals("non")){
+//            System.out.println("The word wasn't found.");
+//            return "non";
+//        }
+//        return buff;
+        return "not the word";
     }
 
     private void doTest1(){
@@ -76,11 +85,11 @@ public class ObjectiveHandler {
     }
 
     private void doTest2(){
-        List<Character> characters = alphabet2List();  // using TEST_ALPHABET2
-        String buff = doTask(4, "e2fc714c4727ee9395f324cd2e7f331f", characters); // abcd
-        if (buff.equals("non")){
-            System.out.println("The word wasn't found.");
-        }
-        System.out.println(buff);
+//        List<Character> characters = alphabet2List();  // using TEST_ALPHABET2
+//        String buff = doTask(4, "e2fc714c4727ee9395f324cd2e7f331f", characters); // abcd
+//        if (buff.equals("non")){
+//            System.out.println("The word wasn't found.");
+//        }
+//        System.out.println(buff);
     }
 }

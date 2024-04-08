@@ -18,7 +18,9 @@ public class Task {
 //    @XmlElement(name = "hash")
     public String hash = null;
 //    @XmlElement(name = "maxLength")
-    public int maxLength;
+    public int length;
 //    @XmlElement(name = "creationTime")
     public long creationTime;
+    public char firstWord;
+    public char lastWord;
 }
