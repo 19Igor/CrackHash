@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@Document(collection = "MyFirstMongoDB")
+@Document(collection = "Tasks")
 public class DataBaseEntry {
     @Id
-    private int id;
+    private String id;
     @Field("userID")
     private String userID;
     @Field("taskID")

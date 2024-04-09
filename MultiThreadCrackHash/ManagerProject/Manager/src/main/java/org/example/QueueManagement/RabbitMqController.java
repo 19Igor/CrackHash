@@ -4,6 +4,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import org.example.Controller.DbController;
 import org.example.Model.Task;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 @Scope("singleton")
@@ -21,14 +21,15 @@ public class RabbitMqController {
     /*
     * Здесь будет конвертирование в xml и отправка таски в очередь
     * */
-
     private final String topicExchangeName = "MANAGER_EXCHANGE";
     private final String Manager2WorkerKey = "Manager2WorkerKey";
 
     private final RabbitTemplate rabbitTemplate;
+    private final DbController dbController;
 
-    public RabbitMqController(RabbitTemplate rabbitTemplate) {
+    public RabbitMqController(RabbitTemplate rabbitTemplate, DbController cont) {
         this.rabbitTemplate = rabbitTemplate;
+        this.dbController = cont;
     }
 
     public void sendTaskToQueue(Task task){
@@ -58,7 +59,7 @@ public class RabbitMqController {
             JAXBContext jaxbContext = JAXBContext.newInstance(Task.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             buff = (Task) unmarshaller.unmarshal(new StringReader(xmlTask));
-            System.out.println(buff.word);
+            dbController.saveTaskIntoDB(buff);
         }
         catch (JAXBException e) {
             e.printStackTrace();

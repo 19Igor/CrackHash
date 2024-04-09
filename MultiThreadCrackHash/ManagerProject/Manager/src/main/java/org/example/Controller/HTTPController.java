@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.Const.WorkerStatus;
 import org.example.DbManagement.TaskRepository;
 import org.example.Model.*;
+import org.example.QueueManagement.RabbitMqController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -21,49 +22,63 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @EnableMongoRepositories(basePackages = {"org.example.DbManagement"})
 public class HTTPController {
 
+    @Autowired
+    private final TaskRepository taskRepository;
+    @Autowired
+    private final DbController dbController;
+    @Autowired
+    private final RabbitMqController rabbitMqController;
+    @Autowired
+    private final ObjectiveDistribution objectiveDistribution;
+
     private final CopyOnWriteArrayList<Task> collection;
     private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
     private static int currentTaskCounter = 0;
-    @Autowired
-    private final TaskRepository taskRepository;
-    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz1234567890"; // (36)
-    private static final int workerAmount = 2;
-
 
     @PostMapping()
     // точка старта
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
         System.out.println("\uD83E\uDD17 Start: HTTPController");
 
-//        Task task = createWorkerTask(requestDto);
-//        appendTask2DB(task);
+        Task task = createGeneralTask(requestDto);
+        List<Task> entries = objectiveDistribution.distributeObjectives(task);
+
+        taskRepository.deleteAll();
+        sendTasksIntoDB(entries);
+
+        List<DataBaseEntry> retrievedTasks = taskRepository.findByUserID(RESERVED_ID);
+        System.out.println("\uD83D\uDE0E\uD83D\uDC4C\uD83D\uDD25 Output of dataBaseEntries:");
+        for (DataBaseEntry entry : retrievedTasks){
+            System.out.println(entry.getFirstWord() + " - " + entry.getLastWord());
+        }
+
+        // It needs to send the mini-tasks through the queue to workers
+
+
 
 
         // здесь будет проверка добавления таски в бд и изъятие этой таски из бд
         {
-            taskRepository.deleteAll();
-            DataBaseEntry one = new DataBaseEntry("SomeStr", 10, "word",
-                    WorkerStatus.READY, "hash", 5, 2345, 'a', 'b');
-            taskRepository.insert(one);
-
-//            DataBaseEntry retrievedStudent = taskRepository.findById(one.getId()).orElse(null);
-//            List<DataBaseEntry> retrievedTasks = taskRepository.findDataBaseEntriesByUserID(RESERVED_ID);
-
-            List<DataBaseEntry> retrievedTasks = taskRepository.findByUserID("SomeStr");
-            if (retrievedTasks != null) {
-                System.out.println("\uD83E\uDD17 Это длина retrievedTasks: " + retrievedTasks.size());
-                System.out.println("Retrieved Entry: " + retrievedTasks.get(0).getWord());
-            } else {
-                System.out.println("\uD83D\uDE14 The entry not found!");
-            }
+//            taskRepository.deleteAll();
+//            DataBaseEntry one = new DataBaseEntry("SomeStr", 10, "word",
+//                    WorkerStatus.READY, "hash", 5, 2345, 'a', 'b');
+//            taskRepository.insert(one);
+//
+//            List<DataBaseEntry> retrievedTasks = taskRepository.findByUserID("SomeStr");
+//            if (retrievedTasks != null) {
+//                System.out.println("\uD83E\uDD17 Это длина retrievedTasks: " + retrievedTasks.size());
+//                System.out.println("Retrieved Entry: " + retrievedTasks.get(0).getWord());
+//            } else {
+//                System.out.println("\uD83D\uDE14 The entry not found!");
+//            }
         }
 
 //        mqController.sendTaskToQueue(getObjective(objectiveID));
 
         // это уже не понадобится, так как всё взаимодействие будет происходить через очередь.
         // invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
-        System.out.println("End: HTTPController");
 
+        System.out.println("End: HTTPController");
         return new RequestedID(RESERVED_ID);
     }
 
@@ -106,8 +121,7 @@ public class HTTPController {
     }
 
 
-    private Task createWorkerTask(RequestDto requestBody){
-        char[] alphabet = ALPHABET.toCharArray();
+    private Task createGeneralTask(RequestDto requestBody){
 
         Task newTask = new Task();
         newTask.userID = RESERVED_ID;
@@ -116,37 +130,16 @@ public class HTTPController {
         newTask.hash = requestBody.getHash();
         newTask.length = requestBody.getMaxLength();
         newTask.creationTime = System.currentTimeMillis();
-        newTask.firstWord = getFirstWord(alphabet, newTask.taskID);
-        newTask.lastWord = getLastWord(alphabet, newTask.taskID);
+        newTask.firstWord = '?';
+        newTask.lastWord = '?';
 
         return newTask;
     }
 
-    private char getFirstWord(char[] alphabet, int currentTaskCounter){
-        int shift = alphabet.length / workerAmount;
-        return alphabet[shift * currentTaskCounter];
+    private void sendTasksIntoDB(List<Task> tasks){
+        for (Task task : tasks) {
+            dbController.saveTaskIntoDB(task);
+        }
     }
 
-    private char getLastWord(char[] alphabet, int currentTaskCounter){
-        int shift = alphabet.length / workerAmount;
-        if (shift * currentTaskCounter + shift > alphabet.length)
-            return alphabet[alphabet.length - 1];
-        return alphabet[shift * currentTaskCounter + shift - 1];
-    }
-
-    private void appendTask2DB(Task task){
-        DataBaseEntry dataBaseEntry = new DataBaseEntry(
-                task.userID,
-                task.taskID,
-                task.word,
-                task.status,
-                task.hash,
-                task.length,
-                task.creationTime,
-                'a', 'r' // переделать
-        );
-
-        // сюда нужно накинуть синхронизацию
-        taskRepository.insert(dataBaseEntry);
-    }
 }
