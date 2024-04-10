@@ -32,8 +32,6 @@ public class ObjectiveHandler {
                     return searchedWord;
                 }
             }
-
-//            System.out.println("i = " + i + " searchedWord: " + searchedWord);
         }
         return "non";
     }

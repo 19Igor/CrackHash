@@ -6,18 +6,13 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.Const.Constants.ALPHABET;
 import static org.example.Const.Constants.WORKER_AMOUNT;
 
 @Component
 public class ObjectiveDistribution {
-    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz1234567890"; // (36)
 
-    /*
-    * Передаю сюда большую таску
-    * Теперь я должен в каждую "маленькую" таску запихнуть буквы
-    * */
     List<Task> distributeObjectives(Task task){
-
         char[] alphabet = ALPHABET.toCharArray();
         List<Task> buff = new ArrayList<>();
 

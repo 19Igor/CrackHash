@@ -48,7 +48,6 @@ public class AppConf{
         CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("rabbitmq");
         cachingConnectionFactory.setUsername("user");
         cachingConnectionFactory.setPassword("user");
-//        cachingConnectionFactory.setVirtualHost("vhost");
         return cachingConnectionFactory;
     }
     @Bean

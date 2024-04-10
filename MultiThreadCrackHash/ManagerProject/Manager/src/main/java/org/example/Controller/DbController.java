@@ -18,7 +18,6 @@ public class DbController {
     private final TaskRepository taskRepository;
 
     public void saveTaskIntoDB(final Task task){
-        // сюда нужно накинуть синхронизацию (у каждого воркера будет своя таска)
         DataBaseEntry one = convertTask2DataBaseEntry(task);
         System.out.println("\uD83D\uDE09 It's one: " + one.getId() + " and fist word: " + one.getFirstWord());
         taskRepository.insert(one);
