@@ -31,7 +31,8 @@ public class QueueController {
         buff = marshaller.convertXmlString2Task(xmlTask); // убрать static у convertXmlString2Task
         buff.word = ObjectiveHandler.convertHash2Word(buff.hash, buff.length, buff.firstWord, buff.lastWord);
         String stringBuff = marshaller.convertTask2XmlString(buff);
-        System.out.println("Return transmission is started");
+        System.out.println("Return transmission is started.");
         rabbitTemplate.convertAndSend(WORKER_EXCHANGE, Worker2ManagerKey, stringBuff);
+        System.out.println("Return transmission is ended.");
     }
 }

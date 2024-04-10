@@ -29,6 +29,18 @@ services:
     networks:
       - main
 
+  worker-service2:
+    build:
+      context: ./MultiThreadCrackHash/WorkerProject/Worker
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    restart: always
+    depends_on:
+      - manager-service
+    networks:
+      - main
+
   manager-service:
     build: 
       context: ./MultiThreadCrackHash/ManagerProject/Manager
