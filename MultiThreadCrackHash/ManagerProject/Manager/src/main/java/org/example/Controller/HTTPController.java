@@ -45,15 +45,16 @@ public class HTTPController {
 
         taskRepository.deleteAll();
         sendTasksIntoDB(entries);
+        rabbitMqController.queueTasks(entries);
 
-        List<DataBaseEntry> retrievedTasks = taskRepository.findByUserID(RESERVED_ID);
-        System.out.println("\uD83D\uDE0E\uD83D\uDC4C\uD83D\uDD25 Output of dataBaseEntries:");
-        for (DataBaseEntry entry : retrievedTasks){
-            System.out.println(entry.getFirstWord() + " - " + entry.getLastWord());
-        }
+        // It needs to send mini-tasks through the queue to workers.
 
-        // It needs to send the mini-tasks through the queue to workers
 
+//        List<DataBaseEntry> retrievedTasks = taskRepository.findByUserID(RESERVED_ID);
+//        System.out.println("\uD83D\uDE0E\uD83D\uDC4C\uD83D\uDD25 Output of dataBaseEntries:");
+//        for (DataBaseEntry entry : retrievedTasks){
+//            System.out.println(entry.getFirstWord() + " - " + entry.getLastWord());
+//        }
 
 
 
@@ -78,7 +79,7 @@ public class HTTPController {
         // это уже не понадобится, так как всё взаимодействие будет происходить через очередь.
         // invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
 
-        System.out.println("End: HTTPController");
+        System.out.println("\uD83E\uDD17 End: HTTPController");
         return new RequestedID(RESERVED_ID);
     }
 
@@ -116,11 +117,6 @@ public class HTTPController {
 //        DataBaseEntry retrievedStudent = taskRepository.findBy()
 //    }
 
-    private void deleteAllElementsFromTaskQueue(String userID){
-        collection.removeIf(buff -> buff.userID.equals(userID));
-    }
-
-
     private Task createGeneralTask(RequestDto requestBody){
 
         Task newTask = new Task();
@@ -137,6 +133,7 @@ public class HTTPController {
     }
 
     private void sendTasksIntoDB(List<Task> tasks){
+        // можно ли эту штуку вынести в DbController ? Не будет ли в DbController рекурсивная зависимость ?
         for (Task task : tasks) {
             dbController.saveTaskIntoDB(task);
         }

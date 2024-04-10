@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.List;
 
 @Component
 @Scope("singleton")
@@ -32,7 +33,7 @@ public class RabbitMqController {
         this.dbController = cont;
     }
 
-    public void sendTaskToQueue(Task task){
+    public void queueTask(Task task){
         System.out.println("Start: RabbitMqController");
         StringWriter stringWriter = new StringWriter();
 
@@ -49,6 +50,12 @@ public class RabbitMqController {
         System.out.println("Sending from manger to queue");
         rabbitTemplate.convertAndSend(topicExchangeName, Manager2WorkerKey, stringWriter.toString());
         System.out.println("End: RabbitMqController");
+    }
+
+    public void queueTasks(List<Task> tasks){
+        for (Task task: tasks){
+            queueTask(task);
+        }
     }
 
     @RabbitListener(queues = "Worker2ManagerQueue")

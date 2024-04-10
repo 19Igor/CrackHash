@@ -18,14 +18,16 @@ services:
       - main
   
   worker-service:
-     build:
-       context: ./MultiThreadCrackHash/WorkerProject/Worker
-       dockerfile: Dockerfile
-     ports:
-       - "8081:8081"
-     restart: always
-     networks:
-       - main
+    build:
+      context: ./MultiThreadCrackHash/WorkerProject/Worker
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    restart: always
+    depends_on:
+      - manager-service
+    networks:
+      - main
 
   manager-service:
     build: 
