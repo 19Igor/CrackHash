@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static org.example.Const.Constants.TIME_LIMIT;
+
 @RestController
 @RequestMapping("manager")
 @AllArgsConstructor
@@ -56,8 +58,6 @@ public class HTTPController {
 //            System.out.println(entry.getFirstWord() + " - " + entry.getLastWord());
 //        }
 
-
-
         // здесь будет проверка добавления таски в бд и изъятие этой таски из бд
         {
 //            taskRepository.deleteAll();
@@ -76,11 +76,23 @@ public class HTTPController {
 
 //        mqController.sendTaskToQueue(getObjective(objectiveID));
 
-        // это уже не понадобится, так как всё взаимодействие будет происходить через очередь.
-        // invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
-
         System.out.println("\uD83E\uDD17 End: HTTPController");
         return new RequestedID(RESERVED_ID);
+    }
+
+    @GetMapping
+    public Response2User sendResult2User(@RequestParam("id") String userId){
+        List<DataBaseEntry> tasksFromDB = taskRepository.findByUserID(userId);
+
+        for(DataBaseEntry entry: tasksFromDB){
+            if (entry.getWord() != null && !entry.getWord().equals("non")){
+                return new Response2User(WorkerStatus.READY, entry.getWord());
+            }
+            else if (entry.getStatus().equals(WorkerStatus.IN_PROGRESS) && entry.getCreationTime() <= TIME_LIMIT) {
+                return new Response2User(WorkerStatus.IN_PROGRESS, "Your task is processed.");
+            }
+        }
+        return new Response2User(WorkerStatus.ERROR, "Your time is overed.");
     }
 
 //    @GetMapping
@@ -110,11 +122,6 @@ public class HTTPController {
 //            }
 //            return null;
 //        }
-//    }
-
-//    @GetMapping
-//    public Response2User sendResult2User(@RequestParam("id") String id) {
-//        DataBaseEntry retrievedStudent = taskRepository.findBy()
 //    }
 
     private Task createGeneralTask(RequestDto requestBody){

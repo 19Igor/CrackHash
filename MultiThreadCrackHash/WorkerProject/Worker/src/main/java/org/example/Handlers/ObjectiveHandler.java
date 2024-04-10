@@ -1,7 +1,6 @@
 package org.example.Handlers;
 
 import org.paukov.combinatorics3.Generator;
-
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +17,7 @@ public class ObjectiveHandler {
     public static String convertHash2Word(String hash, int maxWordLen, char firstWord, char lastWord) {
         /*
         * 1. Определить то множество букв, которые предназначены для данного воркера
-        * 2. Создаю цикл. В этом цикле прохожусь по всем буквам воркера и отправляю их в doTask().
+        * 2. Создаю цикл. В этом цикле прохожусь сначала по всем уровням, а потом по всем буквам воркеров и отправляю их в doTask().
         * 3. doTask() возвращает либо слово, либо non.
         * */
 
@@ -37,10 +36,6 @@ public class ObjectiveHandler {
 //            System.out.println("i = " + i + " searchedWord: " + searchedWord);
         }
         return "non";
-    }
-
-    public static void main(String[] args) {
-        System.out.println(convertHash2Word(calculateMD5Hash("abcd"), 4, 'a', 'r'));
     }
 
     private static List<Character> getSpecifiedLetters(Character firstWord, Character lastWord) {

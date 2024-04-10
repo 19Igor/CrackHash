@@ -24,6 +24,10 @@ public class DbController {
         taskRepository.insert(one);
     }
 
+    public void updateTaskIntoDB(Task task){
+        taskRepository.save(convertTask2DataBaseEntry(task));
+    }
+
     private DataBaseEntry convertTask2DataBaseEntry(Task task){
         return new DataBaseEntry(
                 task.userID, task.taskID,

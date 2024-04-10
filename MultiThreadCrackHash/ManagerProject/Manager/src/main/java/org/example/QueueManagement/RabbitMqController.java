@@ -76,5 +76,6 @@ public class RabbitMqController {
 
         // TODO: здесь реализовать добавление выполненных тасок в БД.
 
+        dbController.updateTaskIntoDB(buff);
     }
 }
