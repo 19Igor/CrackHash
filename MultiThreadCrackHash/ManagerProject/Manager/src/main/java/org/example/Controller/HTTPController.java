@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 import static org.example.Const.Constants.TIME_LIMIT;
 
@@ -25,14 +26,12 @@ public class HTTPController {
     @Autowired
     private final TaskRepository taskRepository;
     @Autowired
-    private final DbController dbController;
+    private final DbService dbService;
     @Autowired
     private final RabbitMqController rabbitMqController;
     @Autowired
     private final ObjectiveDistribution objectiveDistribution;
 
-    private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
-    private final boolean ALL_TASKS_ARE_DONE = true;
     private static int currentTaskCounter = 0;
 
     @PostMapping()
@@ -40,15 +39,16 @@ public class HTTPController {
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
         System.out.println("\uD83E\uDD17 Start: HTTPController");
 
-        Task task = createGeneralTask(requestDto);
+        String userId = UUID.randomUUID().toString();
+        Task task = createGeneralTask(requestDto, userId);
         List<Task> entries = objectiveDistribution.distributeObjectives(task);
 
-        taskRepository.deleteAll();
-        sendTasksIntoDB(entries);
+        dbService.sendTasksIntoDB(entries);
         rabbitMqController.queueTasks(entries);
 
         System.out.println("\uD83E\uDD17 End: HTTPController");
-        return new RequestedID(RESERVED_ID);
+
+        return new RequestedID(userId);
     }
 
     @GetMapping
@@ -59,7 +59,8 @@ public class HTTPController {
             DataBaseEntry currentTask = tasksFromDB.get(i);
             double workingTimeSec = (System.currentTimeMillis() - currentTask.getCreationTime()) / 1000.0;
 
-            if (currentTask.getWord() != null && !currentTask.getWord().equals("non")){
+            // убрать условие && !currentTask.getWord().equals("non")
+            if (currentTask.getWord() != null){
                 return new Response2User(WorkerStatus.READY, currentTask.getWord());
             }
             else if (currentTask.getStatus().equals(WorkerStatus.IN_PROGRESS) &&
@@ -71,14 +72,10 @@ public class HTTPController {
         return new Response2User(WorkerStatus.ERROR, "Your time is overed.");
     }
 
-    private boolean checkAllTasks(List<DataBaseEntry> tasksFromDB){
-        return false;
-    }
-
-    private Task createGeneralTask(RequestDto requestBody){
+    private Task createGeneralTask(RequestDto requestBody, String userId){
 
         Task newTask = new Task();
-        newTask.userID = RESERVED_ID;
+        newTask.userID = userId;
         newTask.taskID = currentTaskCounter++;      // 0
         newTask.status = WorkerStatus.IN_PROGRESS;
         newTask.hash = requestBody.getHash();
@@ -90,11 +87,5 @@ public class HTTPController {
         return newTask;
     }
 
-    private void sendTasksIntoDB(List<Task> tasks){
-        //TODO: можно ли эту штуку вынести в DbController ? Не будет ли в DbController рекурсивная зависимость ?
-        for (Task task : tasks) {
-            dbController.saveTaskIntoDB(task);
-        }
-    }
 
 }

@@ -4,7 +4,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import org.example.Controller.DbController;
+import org.example.Controller.DbService;
 import org.example.Model.Task;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -26,11 +26,11 @@ public class RabbitMqController {
     private final String Manager2WorkerKey = "Manager2WorkerKey";
 
     private final RabbitTemplate rabbitTemplate;
-    private final DbController dbController;
+    private final DbService dbService;
 
-    public RabbitMqController(RabbitTemplate rabbitTemplate, DbController cont) {
+    public RabbitMqController(RabbitTemplate rabbitTemplate, DbService cont) {
         this.rabbitTemplate = rabbitTemplate;
-        this.dbController = cont;
+        this.dbService = cont;
     }
 
     public void queueTask(Task task){
@@ -42,14 +42,14 @@ public class RabbitMqController {
             Marshaller marshaller1 = buff.createMarshaller();
             marshaller1.marshal(task, stringWriter);
             System.out.println(stringWriter);
+
+            System.out.println("Sending from manger to queue");
+            rabbitTemplate.convertAndSend(topicExchangeName, Manager2WorkerKey, stringWriter.toString());
+            System.out.println("End: RabbitMqController");
         }
         catch (JAXBException e){
             e.printStackTrace();
         }
-
-        System.out.println("Sending from manger to queue");
-        rabbitTemplate.convertAndSend(topicExchangeName, Manager2WorkerKey, stringWriter.toString());
-        System.out.println("End: RabbitMqController");
     }
 
     public void queueTasks(List<Task> tasks){
@@ -66,16 +66,12 @@ public class RabbitMqController {
             JAXBContext jaxbContext = JAXBContext.newInstance(Task.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             buff = (Task) unmarshaller.unmarshal(new StringReader(xmlTask));
-            dbController.saveTaskIntoDB(buff);
+            dbService.saveTaskIntoDB(buff);
         }
         catch (JAXBException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
         System.out.println("\uD83D\uDE04 Message receiving is ended");
-
-        // TODO: здесь реализовать добавление выполненных тасок в БД.
-
-        dbController.updateTaskIntoDB(buff);
     }
 }

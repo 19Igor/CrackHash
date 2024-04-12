@@ -28,12 +28,12 @@ public class ObjectiveHandler {
             for (Character character : buff) {
                 searchedWord = doTask(i, hash, character);
 
-                if (!searchedWord.equals("non")){
+                if (searchedWord != null){
                     return searchedWord;
                 }
             }
         }
-        return "non";
+        return null;
     }
 
     private static List<Character> getSpecifiedLetters(Character firstWord, Character lastWord) {
@@ -53,7 +53,7 @@ public class ObjectiveHandler {
             return curLetter + matchingWord.get();
         }
 
-        return "non";
+        return null;
     }
 
     private static String calculateMD5Hash(String permutation) {
@@ -84,7 +84,7 @@ public class ObjectiveHandler {
         return list;
     }
 
-    private static void doConvertHash2WordTest(){
+    private static void convertHash2WordTest(){
         String word = convertHash2Word(calculateMD5Hash("abcd"), 4, 'a', 'r');
         System.out.println("The word is " + word);
     }

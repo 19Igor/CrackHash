@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @Component
 @RestController
 @AllArgsConstructor
-public class DbController {
+public class DbService {
     @Autowired
     private final TaskRepository taskRepository;
 
@@ -21,6 +22,13 @@ public class DbController {
         DataBaseEntry one = convertTask2DataBaseEntry(task);
         System.out.println("\uD83D\uDE09 It's one: " + one.getId() + " and fist word: " + one.getFirstWord());
         taskRepository.insert(one);
+    }
+
+    public void sendTasksIntoDB(List<Task> tasks){
+        //TODO: можно ли эту штуку вынести в DbController ? Не будет ли в DbController рекурсивная зависимость ?
+        for (Task task : tasks) {
+            saveTaskIntoDB(task);
+        }
     }
 
     public void updateTaskIntoDB(Task task){

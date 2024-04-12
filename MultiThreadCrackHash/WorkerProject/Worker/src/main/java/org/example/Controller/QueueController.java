@@ -22,7 +22,6 @@ public class QueueController {
     private final MyMarshaller marshaller;
 
     @RabbitListener(queues = "Manager2WorkerQueue")
-    @Async
     public void sendDoneTask(@RequestBody String xmlTask){
         Task buff = null;
         buff = marshaller.convertXmlString2Task(xmlTask);
