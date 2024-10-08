@@ -20,10 +20,6 @@ import java.util.ArrayDeque;
 @Scope("prototype")
 public class MyMarshaller {
 
-    private static final String FILE_NAME = "MarshallerBean.xml";
-    private Marshaller marshaller;
-    private Unmarshaller unmarshaller;
-
     public MyMarshaller(){}
 
     public Task convertXmlString2Task(String xmlTask){

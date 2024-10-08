@@ -1,0 +1,15 @@
+package org.example.DbManagement;
+
+import org.example.Model.DataBaseEntry;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository("taskRepository")
+public interface TaskRepository extends MongoRepository<DataBaseEntry, String> {
+    @Query(value = "{userID: '?0'}")
+    List<DataBaseEntry> findByUserID(String userID);
+
+}

@@ -16,13 +16,7 @@ public class QueueController {
 
     @Async
     @PostMapping
-    //  java memory module(double check locking) (чтение несонхранизованного чтения)
     public void getTaskFromWorker(@RequestBody Task task){
-        /*
-        * Данный метод не являетяс атомарным, так как в моменте между поиском и присваиванием значений, состояние
-        * найденного элемента может поменяться.
-        * */
-
         synchronized (collection){
             for (Task value : collection) {
                 if (value.taskID == task.taskID) {
@@ -31,15 +25,5 @@ public class QueueController {
                 }
             }
         }
-
-
-//        for (Task value : collection) {
-//            if (value.taskID == task.taskID) {
-//                // на этом моменте может быть уже изменено значение другим потоком
-//                value.status = WorkerStatus.READY;
-//                // или на этом моменте может быть уже изменено значение другим потоком
-//                value.word = task.word;
-//            }
-//        }
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Async;
 
 @Data
 @Async
-// синхронизовать
 public class Task {
     public String userID;
     public int taskID;
