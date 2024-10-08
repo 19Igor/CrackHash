@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84631d39-5d39-43fa-8d50-7658105fbdd2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Model/TaskQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Model/TaskQueue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Config/AppConf.java" beforeDir="false" afterPath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Config/AppConf.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Controller/HTTPController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ManagerProject/Manager/src/main/java/org/example/Controller/HTTPController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MultiThreadCrackHash/ManagerProject/Manager/src/main/java/org/example/Model/RequestedID.java" beforeDir="false" afterPath="$PROJECT_DIR$/MultiThreadCrackHash/ManagerProject/Manager/src/main/java/org/example/Model/RequestedID.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +54,7 @@
     "Maven.CrackHash [package].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "develop",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/igorepov/IdeaProjects/CrackHash",
     "node.js.detected.package.eslint": "true",
@@ -90,6 +91,33 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration default="true" type="Babashka" factoryName="BabashkaLocalRepl" activateToolWindowBeforeRun="false">
+      <setting name="displayName" value="" />
+      <setting name="bbPath" value="" />
+      <setting name="parameters" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <setting name="workingDir" value="" />
+      <setting name="focusEditor" value="false" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ClojureREPL" factoryName="Local" activateToolWindowBeforeRun="false">
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="ClojureREPL" factoryName="Remote" activateToolWindowBeforeRun="false">
+      <setting name="displayName" value="" />
+      <setting name="host" value="" />
+      <setting name="port" value="0" />
+      <setting name="replType" value="SOCKET" />
+      <setting name="configType" value="SPECIFY" />
+      <setting name="replPortFileType" value="STANDARD" />
+      <setting name="customPortFile" value="" />
+      <setting name="fixLineNumbers" value="false" />
+      <setting name="focusEditor" value="false" />
+      <setting name="urlFile" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
       <deployment type="dockerfile">
@@ -171,6 +199,7 @@
       <workItem from="1708096972608" duration="3134000" />
       <workItem from="1708189804499" duration="47000" />
       <workItem from="1709261074875" duration="1364000" />
+      <workItem from="1728384138291" duration="193000" />
     </task>
     <servers />
   </component>

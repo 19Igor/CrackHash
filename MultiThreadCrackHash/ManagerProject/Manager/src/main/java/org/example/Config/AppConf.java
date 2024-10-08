@@ -16,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Configuration
 public class AppConf{
-
     static final String Manager2WorkerQueue = "Manager2WorkerQueue";
     static final String Worker2ManagerQueue = "Worker2ManagerQueue";
     static final String MANAGER_EXCHANGE = "MANAGER_EXCHANGE";
@@ -39,10 +38,8 @@ public class AppConf{
 
     @Bean
     Queue getManager2WorkerQueue() {
-        // скорее всего, здесь нужно будет поменять durable
         return new Queue(Manager2WorkerQueue, true);
     }
-//----------------------------------------------------------------------------------------------------------------------
     @Bean
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("rabbitmq");
@@ -59,7 +56,6 @@ public class AppConf{
     public AmqpAdmin amqpAdmin() {
         return new RabbitAdmin(connectionFactory());
     }
-//----------------------------------------------------------------------------------------------------------------------
     @Bean
     DirectExchange managerExchange(){
         return new DirectExchange(MANAGER_EXCHANGE);
@@ -69,7 +65,6 @@ public class AppConf{
     Binding binding(Queue getManager2WorkerQueue, DirectExchange managerExchange){
         return BindingBuilder.bind(getManager2WorkerQueue).to(managerExchange).with(Manager2WorkerKey);
     }
-
     @Bean
     Queue getWorker2ManagerQueue(){
         return new Queue(Worker2ManagerQueue, true);

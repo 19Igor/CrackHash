@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Configuration
 public class AppConf {
-
     @SneakyThrows
     @Bean
     @Scope("singleton")

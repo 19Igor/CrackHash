@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "Tasks")
 public class DataBaseEntry {
     @Id
-    private String id; // проверить запуск без id
+    private String id;
     @Field("userID")
     private String userID;
     @Field("taskID")

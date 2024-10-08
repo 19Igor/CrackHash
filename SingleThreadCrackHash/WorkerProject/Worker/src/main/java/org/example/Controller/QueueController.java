@@ -18,8 +18,6 @@ public class QueueController {
 
     @PostMapping
     public void sendDoneTask(@RequestBody Task task){
-        // вынести ассинхронность на уровень воркера, а именно здеь
-        // не в manager делать асинхронную отправку запроса воркеру, а здесь сделать асинхронное выполнение задачи
         task.word = ObjectiveHandler.convertHash2Word(task.hash, task.maxLength);
         HttpEntity<Task> requestTaskHttpEntity = new HttpEntity<>(task);
         restTemplate.postForEntity(localURL, requestTaskHttpEntity, Void.class);

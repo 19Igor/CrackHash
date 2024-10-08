@@ -11,7 +11,6 @@ import static org.example.Const.Constants.WORKER_AMOUNT;
 
 @Component
 public class ObjectiveDistribution {
-
     List<Task> distributeObjectives(Task task){
         char[] alphabet = ALPHABET.toCharArray();
         List<Task> buff = new ArrayList<>();

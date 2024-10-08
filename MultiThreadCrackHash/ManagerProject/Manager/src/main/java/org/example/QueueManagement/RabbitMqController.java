@@ -19,11 +19,8 @@ import java.util.List;
 @Component
 @Scope("singleton")
 public class RabbitMqController {
-    /*
-    * Здесь будет конвертирование в xml и отправка таски в очередь
-    * */
-    private final String topicExchangeName = "MANAGER_EXCHANGE";
-    private final String Manager2WorkerKey = "Manager2WorkerKey";
+    private static final String topicExchangeName = "MANAGER_EXCHANGE";
+    private static final String Manager2WorkerKey = "Manager2WorkerKey";
 
     private final RabbitTemplate rabbitTemplate;
     private final DbService dbService;
@@ -36,7 +33,6 @@ public class RabbitMqController {
     public void queueTask(Task task){
         System.out.println("Start: RabbitMqController");
         StringWriter stringWriter = new StringWriter();
-
         try{
             JAXBContext buff = JAXBContext.newInstance(Task.class);
             Marshaller marshaller1 = buff.createMarshaller();
@@ -61,7 +57,7 @@ public class RabbitMqController {
     @RabbitListener(queues = "Worker2ManagerQueue")
     public void getTaskFromWorker2ManagerQueue(@RequestBody String xmlTask){
         System.out.println("Message receiving is started");
-        Task buff = null;
+        Task buff;
         try{
             JAXBContext jaxbContext = JAXBContext.newInstance(Task.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

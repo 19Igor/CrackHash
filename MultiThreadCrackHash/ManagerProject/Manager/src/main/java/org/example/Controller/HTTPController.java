@@ -38,28 +38,22 @@ public class HTTPController {
     // точка старта
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
         System.out.println("\uD83E\uDD17 Start: HTTPController");
-
         String userId = UUID.randomUUID().toString();
         Task task = createGeneralTask(requestDto, userId);
         List<Task> entries = objectiveDistribution.distributeObjectives(task);
 
         dbService.sendTasksIntoDB(entries);
         rabbitMqController.queueTasks(entries);
-
         System.out.println("\uD83E\uDD17 End: HTTPController");
-
         return new RequestedID(userId);
     }
 
     @GetMapping
     public Response2User sendResult2User(@RequestParam("id") String userId){
         List<DataBaseEntry> tasksFromDB = taskRepository.findByUserID(userId);
-
         for (int i = 0; i < tasksFromDB.size(); i++) {
             DataBaseEntry currentTask = tasksFromDB.get(i);
             double workingTimeSec = (System.currentTimeMillis() - currentTask.getCreationTime()) / 1000.0;
-
-            // убрать условие && !currentTask.getWord().equals("non")
             if (currentTask.getWord() != null){
                 return new Response2User(WorkerStatus.READY, currentTask.getWord());
             }
@@ -73,19 +67,15 @@ public class HTTPController {
     }
 
     private Task createGeneralTask(RequestDto requestBody, String userId){
-
         Task newTask = new Task();
         newTask.userID = userId;
-        newTask.taskID = currentTaskCounter++;      // 0
+        newTask.taskID = currentTaskCounter++;
         newTask.status = WorkerStatus.IN_PROGRESS;
         newTask.hash = requestBody.getHash();
         newTask.length = requestBody.getMaxLength();
         newTask.creationTime = System.currentTimeMillis();
         newTask.firstWord = '?';
         newTask.lastWord = '?';
-
         return newTask;
     }
-
-
 }

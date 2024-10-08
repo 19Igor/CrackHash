@@ -1,8 +1,10 @@
 package org.example.Controller;
 
 import lombok.AllArgsConstructor;
+import org.example.Const.Constants;
 import org.example.Const.WorkerStatus;
 import org.example.Model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -24,37 +26,29 @@ public class HTTPController {
     private CopyOnWriteArrayList<Task> collection;
     private final String RESERVED_ID = "730a04e6-4de9-41f9-9d5b-53b88b17afac";
     private static int currentTaskCounter = 0;
+    @Autowired
+    private final Constants constants;
 
     @PostMapping()
     public RequestedID getUserRequest(@RequestBody RequestDto requestDto) {
-
         int objectiveID = addTask2Collection(createWorkerTask(requestDto));
         invokeWorker(new HttpEntity<>(Objects.requireNonNull(getObjective(objectiveID))));
-
         return new RequestedID(RESERVED_ID);
     }
 
 
     @GetMapping
     public  Response2User sendResult2User(@RequestParam("id") String id) {
-
         for (Task task : collection) {
-            // при нескольких тасках прога выводит первую таску из очереди
-            // это из-за того, что я привизал к task.userID
             if (task.userID.equals(id)) {
                 double workingTimeSec = (System.currentTimeMillis() - task.creationTime) / 1000.0;
                 int TIME_LIMIT = 15;
                 if (task.status.equals(WorkerStatus.IN_PROGRESS) && workingTimeSec >= TIME_LIMIT){
-                    // здесь рассматривается случай, когда время таски превышено
-                    // здесь ещё нужно отправить worker, чтобы он прекратил выполнение текущей задачи
-                    // и при том НЕ завершился
                     return new Response2User(WorkerStatus.ERROR, null);
                 }
                 else if (task.status.equals(WorkerStatus.IN_PROGRESS) && task.word == null){
-                    // здесь рассматривается случай, когда таска выполняется от 0 и до 15 сек.
                     return new Response2User(WorkerStatus.IN_PROGRESS, null);
                 }
-                // здесь нужно очистить нашу коллекцию тасак
                 deleteAllElementsFromTaskQueue(id);
                 return new Response2User(WorkerStatus.READY, task.word);
             }
@@ -67,15 +61,9 @@ public class HTTPController {
     }
 
     private void invokeWorker(HttpEntity<Task> requestDtoHttpEntity){
-        String localURL = "http://localhost:8081/queue";
-        String serviceURL = "http://worker-service:8081/queue";
-
         CompletableFuture.runAsync(() -> {
-            /*
-             *  Любые запросы должны стараться завершиться как можно быстрее.
-             */
             try {
-                restTemplate.postForEntity(localURL, requestDtoHttpEntity, String.class);
+                restTemplate.postForEntity(constants.localURL, requestDtoHttpEntity, String.class);
             } catch (Exception e) {
                 e.printStackTrace();
             }

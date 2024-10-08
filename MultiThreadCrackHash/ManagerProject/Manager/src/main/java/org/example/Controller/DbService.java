@@ -25,7 +25,6 @@ public class DbService {
     }
 
     public void sendTasksIntoDB(List<Task> tasks){
-        //TODO: можно ли эту штуку вынести в DbController ? Не будет ли в DbController рекурсивная зависимость ?
         for (Task task : tasks) {
             saveTaskIntoDB(task);
         }
